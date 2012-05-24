@@ -32,6 +32,7 @@ namespace Touchin.ProjectName.Service
 
 
 		// Constructors
+
 		public SettingsProvider () : this (SettingsType.InMemory)
 		{}
 
@@ -77,19 +78,21 @@ namespace Touchin.ProjectName.Service
 			// чтобы избежать выполнения метода с
 			// неверными агрументами
 
-			if (string.IsNullOrEmpty(key)) throw new ArgumentNullException ("key");
+			if (string.IsNullOrEmpty (key)) throw new ArgumentNullException ("key");
 
-			if (string.IsNullOrEmpty(value)) 
+			if (string.IsNullOrEmpty (value)) 
+			{
 				throw new ArgumentNullException ("value");
+			}
 
 			// Пример кода к конкретной строке
 			var invariantKey = key; 
 
 			switch (_settingsType) // еще один вариант
 			{
-				case SettingsType.InMemory: invariantKey = key.ToLower(); break;
+				case SettingsType.InMemory: invariantKey = key.ToLower (); break;
 				case SettingsType.InFile:
-					invariantKey = string.Format("{0}/{1}",SettingsFilePath,key);
+					invariantKey = string.Format ("{0}/{1}", SettingsFilePath, key);
 					break;
 			}
 
@@ -133,10 +136,15 @@ namespace Touchin.ProjectName.Service
 		{
 			var handler = ValueChanged;
 
-			if(handler != null)
+			if (handler != null)
 			{
 				handler (key, value);
 			}
+		}
+
+		private void Initialize()
+		{
+
 		}
 	}
 }
