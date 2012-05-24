@@ -26,16 +26,18 @@ namespace Touchin.ProjectName.Service
 
 	public class SettingsProvider : ISettingsProvider
 	{
-		// Fields
+		public event ValueChangedEventHandler ValueChanged;
+
+
 
 		public const string SettingsFilePath = "Константа";
 
-		SettingsType _settingsType;
+		private SettingsType _settingsType;
 		protected int _itemsCount = 10;
 
+		public int MaxValue { get; protected set; }
 
 
-		// Constructors
 
 		public SettingsProvider() : this(SettingsType.InMemory)
 		{}
@@ -48,17 +50,22 @@ namespace Touchin.ProjectName.Service
 
 
 
-		// Events
-
-		public event ValueChangedEventHandler ValueChanged;
-
-
-
-		// Properties
+		public SettingsType Facade
+		{
+			get { return _protectedField; }
+		}
 
 		public SettingsType SettingsType
 		{
-			get { return _settingsType; }
+			get 
+			{ 
+				return _settingsType; 
+			}
+			set 
+			{ 
+				NotifyPropertyChange(value);
+				_settingsType = value;
+			}
 		}
 
 		public string ProviderName
@@ -73,11 +80,6 @@ namespace Touchin.ProjectName.Service
 			}
 		}
 
-		public int MaxValue { get; protected set; }
-
-
-
-		// Methods
 
 
 		public void SetValue(string key, string value)
@@ -99,7 +101,9 @@ namespace Touchin.ProjectName.Service
 
 			switch (_settingsType) // еще один вариант
 			{
-				case SettingsType.InMemory: invariantKey = key.ToLower(); break;
+				case SettingsType.InMemory: 
+					invariantKey = key.ToLower(); 
+					break;
 				case SettingsType.InFile:
 					invariantKey = string.Format("{0}/{1}", SettingsFilePath, key);
 					break;
@@ -108,7 +112,6 @@ namespace Touchin.ProjectName.Service
 			// TODO: сохранить значение по ключу
 
 			OnValueChanged(key, value);
-
 		}
 
 		public string GetValue(string key)
@@ -147,11 +150,11 @@ namespace Touchin.ProjectName.Service
 
 			if (handler != null)
 			{
-				handler (key, value);
+				handler(key, value);
 			}
 		}
 
-		void Initialize()
+		private void Initialize()
 		{
 
 		}
