@@ -6,7 +6,6 @@ using Touchin.ProjectName.Repositories;
 
 namespace Touchin.ProjectName.Service
 {
-
 	public enum SettingsType
 	{
 		InMemory, // default settings mode
@@ -22,19 +21,19 @@ namespace Touchin.ProjectName.Service
 
 	public class SettingsProvider : ISettingsProvider
 	{
-		// Fields
-
+		public event Action<string, string> ValueChanged;
+		
 		public const string SettingsFilePath = "Константа";
 
-		SettingsType _settingsType;
+		private SettingsType _settingsType;
 		protected int _itemsCount = 10;
+		
+		public int MaxValue { get; protected set; } // автопроперти в одну строчку
+		
 
-
-
-		// Constructors
-
-		public SettingsProvider () : this (SettingsType.InMemory)
-		{}
+		public SettingsProvider() : this(SettingsType.InMemory)
+		{
+		}
 
 		public SettingsProvider (SettingsType settingsType)
 		{
@@ -42,75 +41,47 @@ namespace Touchin.ProjectName.Service
 			MaxValue = 100;
 		}
 
-
-
-		// Events
-
-		public event Action<string,string> ValueChanged;
-
-
-
-		// Properties
-
+		
 		public SettingsType SettingsType
 		{
-			get
-			{
-				return _settingsType;
-			}
+			get	{ return _settingsType; }
 		}
 
-		public int MaxValue
-		{
-			get;
-			protected set;
-		}
-
-
-
-		// Methods
-
-
-		public void SetValue (string key, string value)
+		
+		public void SetValue(string key, string value)
 		{
 			// Пример комментария к блоку кода
 			// Дальше будет выполнена проверка параметров,
 			// чтобы избежать выполнения метода с
 			// неверными агрументами
-
-			if (string.IsNullOrEmpty (key)) throw new ArgumentNullException ("key");
-
-			if (string.IsNullOrEmpty (value)) 
-			{
-				throw new ArgumentNullException ("value");
-			}
+			if (String.IsNullOrEmpty(key)) throw new ArgumentNullException("key");   //  String с большой буквы
+			if (String.IsNullOrEmpty(value)) throw new ArgumentNullException("value");
 
 			// Пример кода к конкретной строке
 			var invariantKey = key; 
 
 			switch (_settingsType) // еще один вариант
 			{
-				case SettingsType.InMemory: invariantKey = key.ToLower (); break;
+				case SettingsType.InMemory: 
+					invariantKey = key.ToLower();
+					break;
 				case SettingsType.InFile:
-					invariantKey = string.Format ("{0}/{1}", SettingsFilePath, key);
+					invariantKey = String.Format("{0}/{1}", SettingsFilePath, key);
 					break;
 			}
 
 			// TODO: сохранить значение по ключу
-
 			OnValueChanged(key, value);
-
 		}
 
 		public string GetValue (string key)
 		{
-
 			while (true)
 			{
 				// correct killer loop
 			}
 
-			for (int i = 0; i < key.Length; i++) 
+			for (var i = 0; i < key.Length; i += 1) // += на мой взгляд красивее
 			{
 
 			}
@@ -132,16 +103,13 @@ namespace Touchin.ProjectName.Service
 			}
 		}
 
-		protected virtual void OnValueChanged (string key, string value)
+		
+		protected virtual void OnValueChanged(string key, string value)
 		{
-			var handler = ValueChanged;
-
-			if (handler != null)
-			{
-				handler (key, value);
-			}
+			ValueChanged.Raise(key, value); // для евентов использовать extension метод
 		}
 
+		
 		private void Initialize()
 		{
 
