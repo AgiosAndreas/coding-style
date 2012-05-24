@@ -13,11 +13,15 @@ namespace Touchin.ProjectName.Service
 		InFile
 	}
 
+
 	public interface ISettingsProvider
 	{
-		void SetValue (string key, string value);
-		string GetValue (string key);
+		void SetValue(string key, string value);
+		string GetValue(string key);
 	}
+
+
+	public delegate void ValueChangedHandler(string key, string value);
 
 
 	public class SettingsProvider : ISettingsProvider
@@ -33,10 +37,10 @@ namespace Touchin.ProjectName.Service
 
 		// Constructors
 
-		public SettingsProvider () : this (SettingsType.InMemory)
+		public SettingsProvider() : this(SettingsType.InMemory)
 		{}
 
-		public SettingsProvider (SettingsType settingsType)
+		public SettingsProvider(SettingsType settingsType)
 		{
 			_settingsType = settingsType;
 			MaxValue = 100;
@@ -46,7 +50,7 @@ namespace Touchin.ProjectName.Service
 
 		// Events
 
-		public event Action<string,string> ValueChanged;
+		public event ValueChangedEventHandler ValueChanged;
 
 
 
@@ -54,35 +58,40 @@ namespace Touchin.ProjectName.Service
 
 		public SettingsType SettingsType
 		{
+			get { return _settingsType; }
+		}
+
+		public string ProviderName
+		{
 			get
 			{
-				return _settingsType;
+				var providerName = "";
+
+				// TODO: добавить код формирования имени
+
+				return providerName;
 			}
 		}
 
-		public int MaxValue
-		{
-			get;
-			protected set;
-		}
+		public int MaxValue { get; protected set; }
 
 
 
 		// Methods
 
 
-		public void SetValue (string key, string value)
+		public void SetValue(string key, string value)
 		{
 			// Пример комментария к блоку кода
 			// Дальше будет выполнена проверка параметров,
 			// чтобы избежать выполнения метода с
 			// неверными агрументами
 
-			if (string.IsNullOrEmpty (key)) throw new ArgumentNullException ("key");
+			if (string.IsNullOrEmpty(key)) throw new ArgumentNullException("key");
 
-			if (string.IsNullOrEmpty (value)) 
+			if (string.IsNullOrEmpty(value)) 
 			{
-				throw new ArgumentNullException ("value");
+				throw new ArgumentNullException("value");
 			}
 
 			// Пример кода к конкретной строке
@@ -90,9 +99,9 @@ namespace Touchin.ProjectName.Service
 
 			switch (_settingsType) // еще один вариант
 			{
-				case SettingsType.InMemory: invariantKey = key.ToLower (); break;
+				case SettingsType.InMemory: invariantKey = key.ToLower(); break;
 				case SettingsType.InFile:
-					invariantKey = string.Format ("{0}/{1}", SettingsFilePath, key);
+					invariantKey = string.Format("{0}/{1}", SettingsFilePath, key);
 					break;
 			}
 
@@ -102,7 +111,7 @@ namespace Touchin.ProjectName.Service
 
 		}
 
-		public string GetValue (string key)
+		public string GetValue(string key)
 		{
 
 			while (true)
@@ -110,7 +119,7 @@ namespace Touchin.ProjectName.Service
 				// correct killer loop
 			}
 
-			for (int i = 0; i < key.Length; i++) 
+			for (var i = 0; i < key.Length; i++) 
 			{
 
 			}
@@ -132,7 +141,7 @@ namespace Touchin.ProjectName.Service
 			}
 		}
 
-		protected virtual void OnValueChanged (string key, string value)
+		protected virtual void OnValueChanged(string key, string value)
 		{
 			var handler = ValueChanged;
 
@@ -142,7 +151,7 @@ namespace Touchin.ProjectName.Service
 			}
 		}
 
-		private void Initialize()
+		void Initialize()
 		{
 
 		}
